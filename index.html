@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dermalytix — Predictive Bedsore Prevention</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description"
+      content="Dermalytix is a low-cost, predictive pressure-injury prevention system using thin-film sensors, embedded electronics, and intelligent risk modeling." />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111111;
+        --muted: #5c5c5c;
+        --accent: #007aff;
+        --accent-soft: #e8f1ff;
+        --border: #e0e0e0;
+        --card-bg: #fafafa;
+        --radius-lg: 18px;
+        --radius-sm: 12px;
+        --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.08);
+        --max-width: 1080px;
+        --transition-fast: 0.2s ease;
+
+        /* Vibrant color palette */
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-success: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --gradient-warm: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --gradient-cool: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+        background: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);
+        color: var(--text);
+        line-height: 1.5;
+        overflow-x: hidden;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Apple-style animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      /* Initial hidden state for scroll animations */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .fade-in {
+        opacity: 0;
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+      }
+
+      .scale-in {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .scale-in.visible {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(20px) saturate(180%);
+        background: rgba(255, 255, 255, 0.85);
+        border-bottom: 1px solid var(--border);
+        animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      nav {
+        max-width: var(--max-width);
+        margin: auto;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 1.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .logo-mark {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+        animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        font-size: 0.95rem;
+      }
+
+      /* Mobile menu button */
+      .menu-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 100;
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .menu-toggle span {
+        width: 24px;
+        height: 2px;
+        background: var(--text);
+        border-radius: 2px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .menu-toggle.active span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+      }
+
+      .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+      }
+
+      .nav-links a {
+        position: relative;
+        padding: 4px 0;
+      }
+
+      .nav-links a {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0;
+        height: 2px;
+        background: var(--gradient-primary);
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .nav-links a:hover {
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      main {
+        max-width: var(--max-width);
+        margin: auto;
+        padding: 40px 22px 80px;
+      }
+
+      /* Mobile-specific improvements */
+      @media (max-width: 768px) {
+        main {
+          padding: 24px 16px 60px;
+        }
+
+        .hero {
+          padding: 24px 0;
+          gap: 24px;
+        }
+
+        .hero h1 {
+          font-size: clamp(1.8rem, 8vw, 2.5rem);
+          margin-bottom: 16px;
+        }
+
+        .hero-sub {
+          font-size: 1rem;
+          margin-bottom: 24px;
+        }
+
+        .section {
+          margin-top: 40px;
+          padding-top: 32px;
+        }
+
+        .section h2 {
+          font-size: 1.5rem;
+          margin-bottom: 12px;
+        }
+
+        .section p.sub {
+          font-size: 0.9rem;
+          margin-bottom: 24px;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .btn-primary,
+        .btn-ghost {
+          padding: 14px 24px;
+          font-size: 1rem;
+          min-height: 48px;
+          /* Touch-friendly */
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .card-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .tech-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .tech-grid .card:nth-child(4),
+        .tech-image {
+          grid-column: span 1;
+        }
+
+        .team-grid {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        /* Better spacing for mobile */
+        .two-col>div {
+          margin-bottom: 24px;
+        }
+
+        .two-col>div:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        align-items: center;
+        gap: 32px;
+        padding: 40px 0;
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Mobile Navigation */
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: flex;
+        }
+
+        .nav-links {
+          position: fixed;
+          top: 0;
+          right: -100%;
+          width: 280px;
+          height: 100vh;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(20px) saturate(180%);
+          flex-direction: column;
+          padding: 80px 24px 24px;
+          gap: 0;
+          box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+          transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 99;
+        }
+
+        .nav-links.active {
+          right: 0;
+        }
+
+        .nav-links a {
+          padding: 16px 0;
+          font-size: 1.1rem;
+          border-bottom: 1px solid var(--border);
+          display: block;
+        }
+
+        .nav-links a:last-child {
+          border-bottom: none;
+        }
+
+        .nav-links a::after {
+          display: none;
+        }
+
+        /* Overlay when menu is open */
+        .nav-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.3);
+          backdrop-filter: blur(4px);
+          z-index: 98;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .nav-overlay.active {
+          display: block;
+          opacity: 1;
+        }
+
+        header {
+          padding: 0;
+        }
+
+        nav {
+          padding: 12px 16px;
+        }
+
+        .logo {
+          font-size: 1.3rem;
+          gap: 10px;
+        }
+
+        .logo-mark {
+          width: 36px;
+          height: 36px;
+        }
+      }
+
+      .eyebrow {
+        font-size: 0.76rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+        line-height: 1.1;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-sub {
+        font-size: 1.05rem;
+        color: var(--muted);
+        margin-bottom: 18px;
+        max-width: 34rem;
+      }
+
+      .hero-buttons {
+        margin-top: 10px;
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 22px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: none;
+        font-weight: 500;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn-primary:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 40px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-ghost {
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background: linear-gradient(white, white) padding-box,
+          var(--gradient-secondary) border-box;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        font-weight: 500;
+      }
+
+      .btn-ghost:hover {
+        background: var(--gradient-secondary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(245, 87, 108, 0.3);
+      }
+
+      .section {
+        margin-top: 60px;
+        padding-top: 40px;
+        border-top: 1px solid var(--border);
+      }
+
+      .section h2 {
+        font-size: 1.8rem;
+        margin-bottom: 6px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .section p.sub {
+        font-size: 0.95rem;
+        color: var(--muted);
+        max-width: 40rem;
+        margin-bottom: 18px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-top: 20px;
+      }
+
+      .three-col {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1fr;
+        gap: 32px;
+        margin-top: 20px;
+        align-items: start;
+      }
+
+      .infographic-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .infographic-center img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        object-fit: contain;
+      }
+
+      @media (max-width: 900px) {
+        .two-col {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .three-col {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .infographic-center {
+          order: 2;
+        }
+
+        .three-col>div:first-child {
+          order: 1;
+        }
+
+        .three-col>div:last-child {
+          order: 3;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .two-col {
+          gap: 20px;
+        }
+
+        .two-col h3 {
+          font-size: 1.2rem;
+          margin-bottom: 12px;
+        }
+
+        .two-col p {
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
+
+        .two-col ul {
+          font-size: 0.95rem;
+          line-height: 1.8;
+        }
+
+        .three-col {
+          gap: 20px;
+        }
+
+        .three-col h3 {
+          font-size: 1.2rem;
+          margin-bottom: 12px;
+        }
+
+        .three-col p {
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
+
+        .infographic-center img {
+          border-radius: var(--radius-sm);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+      }
+
+      .card-grid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 22px;
+      }
+
+      .tech-grid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 22px;
+      }
+
+      .tech-grid .card:nth-child(1),
+      .tech-grid .card:nth-child(2),
+      .tech-grid .card:nth-child(3) {
+        grid-column: span 1;
+      }
+
+      .tech-grid .card:nth-child(4) {
+        grid-column: span 1;
+      }
+
+      .tech-image {
+        grid-column: span 1;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+      }
+
+      .tech-image img {
+        width: 100%;
+        height: 100%;
+        min-height: 200px;
+        object-fit: contain;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        background: white;
+        padding: 16px;
+      }
+
+      .card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-soft);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+      }
+
+      .card:nth-child(1)::before {
+        background: var(--gradient-accent);
+      }
+
+      .card:nth-child(2)::before {
+        background: var(--gradient-success);
+      }
+
+      .card:nth-child(3)::before {
+        background: var(--gradient-warm);
+      }
+
+      .card:nth-child(4)::before {
+        background: var(--gradient-secondary);
+      }
+
+      .card h3 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .card small {
+        font-size: 0.78rem;
+        background: var(--gradient-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 600;
+      }
+
+      .section-image {
+        margin: 28px 0 32px;
+        text-align: center;
+      }
+
+      .section-image img {
+        width: 100%;
+        max-width: 900px;
+        height: auto;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        object-fit: contain;
+      }
+
+      .section-image img:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Flipbook Styles */
+      .flipbook-container {
+        margin: 50px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 40px 20px;
+        background: linear-gradient(to bottom, rgba(102, 126, 234, 0.03), transparent);
+        border-radius: var(--radius-lg);
+      }
+
+      .flipbook-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        padding: 20px;
+      }
+
+      .flipbook {
+        position: relative;
+        width: 100%;
+        max-width: 750px;
+        height: 550px;
+        perspective: 2500px;
+        perspective-origin: center center;
+      }
+
+      .flipbook-page {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        transform-style: preserve-3d;
+        transition:
+          transform 0.8s cubic-bezier(0.42, 0, 0.58, 1),
+          opacity 0.4s ease,
+          z-index 0s 0.4s;
+        transform-origin: left center;
+        backface-visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .flipbook-page.active {
+        opacity: 1;
+        z-index: 10;
+        pointer-events: auto;
+        transform: rotateY(0deg) translateZ(0);
+        transition:
+          transform 0.8s cubic-bezier(0.42, 0, 0.58, 1),
+          opacity 0.4s ease 0.2s,
+          z-index 0s;
+      }
+
+      .flipbook-page.flipping-next {
+        z-index: 15;
+        transform: rotateY(-180deg) translateZ(-100px);
+        opacity: 0.3;
+        transition:
+          transform 0.8s cubic-bezier(0.42, 0, 0.58, 1),
+          opacity 0.6s ease,
+          z-index 0s;
+      }
+
+      .flipbook-page.flipping-prev {
+        z-index: 15;
+        transform: rotateY(180deg) translateZ(-100px);
+        opacity: 0.3;
+        transition:
+          transform 0.8s cubic-bezier(0.42, 0, 0.58, 1),
+          opacity 0.6s ease,
+          z-index 0s;
+      }
+
+      .flipbook-page img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow:
+          0 25px 80px rgba(0, 0, 0, 0.25),
+          0 0 0 1px rgba(0, 0, 0, 0.05),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        background: linear-gradient(to bottom, #ffffff, #fafafa);
+        padding: 12px;
+        transition: transform 0.3s ease;
+      }
+
+      .flipbook-page.active img {
+        transform: scale(1);
+      }
+
+      .flipbook-page.flipping-next img,
+      .flipbook-page.flipping-prev img {
+        transform: scale(0.95);
+      }
+
+      .flipbook-nav {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        font-size: 2.2rem;
+        font-weight: 300;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow:
+          0 10px 30px rgba(102, 126, 234, 0.35),
+          0 0 0 0 rgba(102, 126, 234, 0.5);
+        z-index: 20;
+        min-width: 56px;
+        line-height: 1;
+      }
+
+      .flipbook-nav:hover:not(:disabled) {
+        transform: scale(1.15) translateY(-2px);
+        box-shadow:
+          0 15px 40px rgba(102, 126, 234, 0.45),
+          0 0 0 4px rgba(102, 126, 234, 0.1);
+      }
+
+      .flipbook-nav:active:not(:disabled) {
+        transform: scale(1.05);
+      }
+
+      .flipbook-nav:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .flipbook-controls {
+        margin-top: 32px;
+        text-align: center;
+        padding: 16px 24px;
+        background: white;
+        border-radius: 999px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        display: inline-block;
+      }
+
+      .flipbook-page-indicator {
+        font-size: 1rem;
+        color: var(--muted);
+        font-weight: 500;
+        letter-spacing: 0.5px;
+      }
+
+      .flipbook-page-indicator .current-page {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      @media (max-width: 768px) {
+        .flipbook-container {
+          padding: 30px 16px;
+          margin: 30px 0;
+        }
+
+        .flipbook {
+          height: 400px;
+        }
+
+        .flipbook-wrapper {
+          gap: 12px;
+          padding: 10px;
+        }
+
+        .flipbook-nav {
+          width: 48px;
+          height: 48px;
+          font-size: 1.8rem;
+          min-width: 48px;
+        }
+
+        .flipbook-controls {
+          margin-top: 24px;
+          padding: 12px 20px;
+        }
+      }
+
+      .validation-image {
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .validation-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .validation-image:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .validation-image:hover img {
+        transform: scale(1.02);
+      }
+
+      .validation-video {
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+        background: #000;
+      }
+
+      .validation-video video {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.3s ease;
+      }
+
+      .validation-video:hover video {
+        transform: scale(1.01);
+      }
+
+      .team-photo {
+        margin: 24px 0 32px;
+        text-align: center;
+      }
+
+      .team-photo img {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        object-fit: cover;
+      }
+
+      .team-photo img:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
+      }
+
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 22px;
+        margin-top: 22px;
+      }
+
+      .team-card {
+        background: white;
+        padding: 20px;
+        border: 2px solid transparent;
+        background-image: linear-gradient(white, white), var(--gradient-primary);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+        border-radius: var(--radius-sm);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+      }
+
+      .team-card-flag {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 1.5rem;
+        line-height: 1;
+        z-index: 1;
+      }
+
+      .team-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px rgba(102, 126, 234, 0.2);
+      }
+
+      .team-card:nth-child(2) {
+        background-image: linear-gradient(white, white), var(--gradient-secondary);
+      }
+
+      .team-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .team-card .role {
+        font-size: 0.82rem;
+        background: var(--gradient-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        font-weight: 600;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        padding: 40px 20px;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        background: linear-gradient(to top, rgba(102, 126, 234, 0.05), transparent);
+      }
+
+      @media (max-width: 768px) {
+        .section-image {
+          margin: 20px 0 24px;
+        }
+
+        .section-image img {
+          border-radius: var(--radius-sm);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-photo {
+          margin: 20px 0 24px;
+        }
+
+        .team-photo img {
+          max-width: 100%;
+          border-radius: var(--radius-sm);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .validation-image,
+        .validation-video {
+          border-radius: var(--radius-sm);
+        }
+
+        .validation-image img,
+        .validation-video video {
+          border-radius: var(--radius-sm);
+        }
+
+        /* Stack validation images on mobile */
+        .two-col>div:last-child>div>div:first-child {
+          grid-template-columns: 1fr;
+        }
+
+        .two-col>div:last-child>div>div:last-child {
+          grid-template-columns: 1fr;
+        }
+
+        footer {
+          padding: 32px 16px;
+          font-size: 0.8rem;
+          line-height: 1.6;
+        }
+      }
+
+      /* Tablet optimizations */
+      @media (min-width: 769px) and (max-width: 1024px) {
+        main {
+          padding: 32px 20px 60px;
+        }
+
+        .hero {
+          gap: 28px;
+          padding: 32px 0;
+        }
+
+        .card-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .tech-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .tech-grid .card:nth-child(3) {
+          grid-column: span 2;
+        }
+
+        .tech-grid .card:nth-child(4),
+        .tech-image {
+          grid-column: span 1;
+        }
+      }
+
+      /* Small mobile devices */
+      @media (max-width: 480px) {
+        .hero h1 {
+          font-size: 1.6rem;
+          line-height: 1.2;
+        }
+
+        .hero-sub {
+          font-size: 0.95rem;
+        }
+
+        .section h2 {
+          font-size: 1.3rem;
+        }
+
+        .card {
+          padding: 16px;
+        }
+
+        .team-card {
+          padding: 16px;
+        }
+
+        .btn-primary,
+        .btn-ghost {
+          width: 100%;
+          justify-content: center;
+          display: flex;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .hero-buttons a {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <header>
+      <nav>
+        <div class="logo">
+          <img src="Assets/logo.png" alt="Dermalytix Logo" class="logo-mark" />
+          Dermalytix
+        </div>
+        <button class="menu-toggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-overlay"></div>
+        <div class="nav-links">
+          <a href="#innovation">Innovation</a>
+          <a href="#technology">Technology</a>
+          <a href="#impact">Impact</a>
+          <a href="#team">Team</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+
+      <!-- HERO -->
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Conrad Challenge 2025-2026</div>
+          <h1>Predicting bedsores before they begin.</h1>
+          <p class="hero-sub">
+            Dermalytix is a low-cost system that continuously monitors pressure
+            patterns and identifies early risk of pressure injury through
+            trend-based intelligence.
+          </p>
+          <p class="hero-sub">
+            Unlike reactive solutions, Dermalytix focuses on
+            <strong>
+              pressure over time, redistribution behavior, and caregiver action
+              windows
+            </strong>
+            — enabling prevention before tissue damage occurs.
+          </p>
+          <div class="hero-buttons">
+            <a class="btn-primary" target="_blank" href="https://www.youtube.com/watch?v=ACTUAL_VIDEO_ID">
+              Watch Innovation Video
+            </a>
+            <a href="#innovation" class="btn-ghost">Learn More</a>
+          </div>
+        </div>
+
+        <div class="card scale-in">
+          <h3>What Dermalytix Does</h3>
+          <small>Predictive Patient Safety</small>
+          <p style="margin-top: 10px;">
+            Thin-film sensors capture pressure at high-risk zones. An ESP32 hub
+            processes signals and streams data to a mobile app, where risk logic
+            highlights when intervention is needed.
+          </p>
+        </div>
+      </section>
+
+      <!-- PROTOTYPE AND VALIDATION EVIDENCE -->
+      <section id="prototype-evidence" class="section">
+        <h2 class="fade-in-up">Prototype and Validation Evidence</h2>
+        <p class="sub fade-in-up">Browse through our building process documentation and prototype development photos.
+        </p>
+
+        <div class="flipbook-container fade-in-up">
+          <div class="flipbook-wrapper">
+            <button class="flipbook-nav flipbook-prev" aria-label="Previous page">‹</button>
+            <div class="flipbook">
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8169.jpeg" alt="Building Process Photo 1" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8170.jpeg" alt="Building Process Photo 2" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8171.jpeg" alt="Building Process Photo 3" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8172.jpeg" alt="Building Process Photo 4" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8173.jpeg" alt="Building Process Photo 5" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8174.jpeg" alt="Building Process Photo 6" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8175.jpeg" alt="Building Process Photo 7" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8208.jpeg" alt="Building Process Photo 8" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8209.jpeg" alt="Building Process Photo 9" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8211.jpeg" alt="Building Process Photo 10" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8213.jpeg" alt="Building Process Photo 11" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8214.jpeg" alt="Building Process Photo 12" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8216.jpeg" alt="Building Process Photo 13" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8217.jpeg" alt="Building Process Photo 14" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8219.jpeg" alt="Building Process Photo 15" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8221.jpeg" alt="Building Process Photo 16" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8222.JPEG" alt="Building Process Photo 17" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8223.jpeg" alt="Building Process Photo 18" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8227.jpeg" alt="Building Process Photo 19" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8301.jpeg" alt="Building Process Photo 20" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8302.jpeg" alt="Building Process Photo 21" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8305.jpeg" alt="Building Process Photo 22" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8307.jpeg" alt="Building Process Photo 23" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8308.jpeg" alt="Building Process Photo 24" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8309.JPEG" alt="Building Process Photo 25" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8310.jpeg" alt="Building Process Photo 26" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8312.jpeg" alt="Building Process Photo 27" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8313.jpeg" alt="Building Process Photo 28" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8314.jpeg" alt="Building Process Photo 29" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8315.jpeg" alt="Building Process Photo 30" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8323.jpeg" alt="Building Process Photo 31" />
+              </div>
+              <div class="flipbook-page">
+                <img src="Assets/Building Process/IMG_8325.jpeg" alt="Building Process Photo 32" />
+              </div>
+            </div>
+            <button class="flipbook-nav flipbook-next" aria-label="Next page">›</button>
+          </div>
+          <div class="flipbook-controls">
+            <span class="flipbook-page-indicator">
+              <span class="current-page">1</span> / <span class="total-pages">32</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- INNOVATION -->
+      <section id="innovation" class="section">
+        <h2 class="fade-in-up">Innovation</h2>
+        <p class="sub fade-in-up">
+          Dermalytix shifts pressure-injury prevention from reactive checks to
+          predictive, behavior-aware intelligence.
+        </p>
+
+        <div class="section-image fade-in-up">
+          <img src="Assets/Image2.PNG" alt="Dermalytix Innovation - System Diagram" />
+        </div>
+
+        <div class="three-col">
+          <div class="fade-in-up">
+            <h3>The Problem</h3>
+            <p>
+              Pressure injuries develop silently due to prolonged localized
+              pressure. Manual checks and static thresholds fail to provide
+              continuous awareness.
+            </p>
+          </div>
+          <div class="infographic-center fade-in-up">
+            <img src="Assets/Image3.PNG" alt="AI-Powered Bedsore Prevention System Infographic" />
+          </div>
+          <div class="fade-in-up">
+            <h3>The Solution</h3>
+            <ul style="margin-left: 1rem;">
+              <li>Multi-point pressure sensing</li>
+              <li>Pressure-duration trend analysis</li>
+              <li>Actionable alerts designed for caregivers</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="fade-in-up" style="margin-top: 32px;">
+          <h3>Innovation Depth & Potential IP</h3>
+          <p>
+            Dermalytix introduces novel signal interpretation logic centered on
+            <strong>
+              pressure-duration behavior, redistribution patterns, and
+              caregiver-action timing
+            </strong>.
+          </p>
+          <ul style="margin-left: 1rem;">
+            <li>Multi-sensor trend aggregation</li>
+            <li>Adaptive risk scoring per patient</li>
+            <li>Workflow-aware alerts to reduce alarm fatigue</li>
+          </ul>
+          <p>
+            Based on early modeling and bench testing, Dermalytix is designed to
+            reduce prolonged high-risk pressure exposure events by an estimated
+            <strong>30–50%</strong> in monitored care settings.
+          </p>
+          <p style="font-size: 0.85rem; color: #555">
+            All IP references represent exploratory system-level concepts, not
+            finalized clinical claims.
+          </p>
+        </div>
+      </section>
+
+      <!-- TECHNOLOGY -->
+      <section id="technology" class="section">
+        <h2 class="fade-in-up">Technology</h2>
+        <p class="sub fade-in-up">
+          Hardware, firmware, and analytics operate as a unified system.
+        </p>
+
+        <div class="section-image fade-in-up">
+          <img src="Assets/Image1.PNG" alt="Dermalytix Technology - Pressure Sensor System" />
+        </div>
+
+        <ul class="fade-in-up" style="margin-left: 1rem; margin-top: 20px;">
+          <li>Thin-film FSR pressure sensors</li>
+          <li>ESP32-based edge processing and BLE streaming</li>
+          <li>Mobile app for visualization and alerts</li>
+          <li>Trend-based risk logic (rule-based + ML-assisted)</li>
+        </ul>
+
+        <div class="tech-grid" style="margin-top: 32px;">
+          <div class="card scale-in">
+            <h3>Sensor Mesh</h3>
+            <small>Thin-film pressure sensors</small>
+            <p>Flexible FSR array placed under patient risk zones.</p>
+          </div>
+          <div class="card scale-in">
+            <h3>ESP32 Hub</h3>
+            <small>On-bed edge computing</small>
+            <p>Reads sensors, preprocesses signals, and streams BLE data.</p>
+          </div>
+          <div class="card scale-in">
+            <h3>AI Risk Engine</h3>
+            <small>Predictive analytics</small>
+            <p>Analyzes pressure magnitude, duration, micro-shift variability, and cumulative load to predict early
+              tissue ischemia risk — a precursor to pressure injury formation.</p>
+          </div>
+          <div class="tech-image scale-in">
+            <img src="Assets/Image5.png" alt="Hardware Stack Diagram" />
+          </div>
+          <div class="tech-image scale-in">
+            <img src="Assets/Image6.png" alt="Software Logic Overview - Data Processing" />
+          </div>
+          <div class="tech-image scale-in">
+            <img src="Assets/Image7.png" alt="Software Logic Overview - Caregiver Interaction" />
+          </div>
+          <div class="card scale-in">
+            <h3>Adaptive Calibration</h3>
+            <small>Personalized thresholds</small>
+            <p>Tailors risk scoring to mattress, body type, and mobility.</p>
+          </div>
+          <div class="tech-image scale-in">
+            <img src="Assets/Image4.PNG" alt="Dermalytix Technology Illustration" />
+          </div>
+          <div class="card scale-in">
+            <h3>Data & Validation</h3>
+            <small>Experimental prototyping</small>
+            <p>
+              Sensor data is collected across controlled pressure scenarios, processed into feature vectors, and
+              evaluated using rule-based and ML-assisted risk models.
+              System accuracy improves with adaptive calibration over time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- VALIDATION -->
+      <section id="validation" class="section">
+        <h2 class="fade-in-up">Validation & Practicality</h2>
+        <p class="sub fade-in-up">
+          Prototype feasibility validated through structured bench testing.
+        </p>
+
+        <div class="two-col" style="margin-top: 32px;">
+          <div class="fade-in-up">
+            <ul style="margin-left: 1rem;">
+              <li>Consistent detection of threshold crossings</li>
+              <li>Stable readings under static load</li>
+              <li>
+                Clear differentiation between transient and sustained pressure
+              </li>
+            </ul>
+
+            <h3 style="margin-top: 24px">Development Roadmap</h3>
+            <ul style="margin-left: 1rem;">
+              <li><strong>Q2 2026:</strong> Expanded pilot simulations</li>
+              <li><strong>Q3 2026:</strong> Caregiver workflow feedback</li>
+              <li><strong>Q4 2026:</strong> Broader validation & partnerships</li>
+            </ul>
+
+            <p style="font-size: 0.9rem; color: #555; margin-top: 20px;">
+              Dermalytix is a decision-support tool, not a diagnostic medical device.
+            </p>
+          </div>
+
+          <div class="fade-in-up">
+            <div style="display: grid; gap: 20px;">
+              <!-- Images at the top -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="display: grid; gap: 16px;">
+                  <div class="validation-image">
+                    <img src="Assets/Image8.png" alt="Prototype Testing Setup" />
+                  </div>
+                  <div class="validation-image">
+                    <img src="Assets/Image10.png" alt="Prototype Development" />
+                  </div>
+                </div>
+                <div class="validation-image">
+                  <img src="Assets/Image9.png" alt="Mobile App Interface" />
+                </div>
+              </div>
+
+              <!-- Videos at the bottom -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="validation-video">
+                  <video controls
+                    style="width: 100%; border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);">
+                    <source src="Assets/IMG_8330.mov" type="video/quicktime">
+                    <source src="Assets/IMG_8330.mov" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+                <div class="validation-video">
+                  <video controls
+                    style="width: 100%; border-radius: var(--radius-lg); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);">
+                    <source src="Assets/IMG_8331.mov" type="video/quicktime">
+                    <source src="Assets/IMG_8331.mov" type="video/mp4">
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IMPACT -->
+      <section id="impact" class="section">
+        <h2 class="fade-in-up">Impact & Market Strategy</h2>
+
+        <p class="sub fade-in-up">
+          Pressure injuries represent over
+          <strong>$20B annually</strong> in preventable global healthcare costs.
+        </p>
+
+        <div class="two-col">
+          <div class="fade-in-up">
+            <h3>Who Benefits</h3>
+            <ul style="margin-left: 1rem;">
+              <li>Hospitals & ICUs</li>
+              <li>Nursing homes</li>
+              <li>Home-care patients</li>
+            </ul>
+          </div>
+
+          <div class="fade-in-up">
+            <h3>Adoption Strategy</h3>
+            <ul style="margin-left: 1rem;">
+              <li>B2B pilot deployments</li>
+              <li>Caregiver-facing value proposition</li>
+              <li>Low-cost scalability</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUSINESS -->
+      <section id="business" class="section">
+        <h2 class="fade-in-up">Business Model & Financial Awareness</h2>
+        <p class="sub fade-in-up">
+          Designed for scalable, cost-conscious deployment.
+        </p>
+
+        <ul style="margin-left: 1rem;" class="fade-in-up">
+          <li>Estimated hardware cost: <strong>~$50/unit</strong></li>
+          <li>Software delivered via mobile platform</li>
+          <li>B2B pilot licensing model</li>
+        </ul>
+
+        <p class="fade-in-up">
+          Non-dilutive funding and innovation grants (including Conrad Challenge
+          support) align with early-stage development.
+        </p>
+      </section>
+
+      <!-- TEAM -->
+      <section id="team" class="section">
+        <h2 class="fade-in-up">Team</h2>
+        <p class="sub fade-in-up">Student-led innovation bridging engineering, AI, and global health.</p>
+
+        <div class="team-photo fade-in-up">
+          <img src="Assets/Dermalytix Team Pic.PNG" alt="Dermalytix Team - Ayushmaan and Saanvi" />
+        </div>
+
+        <div class="team-grid">
+          <div class="team-card scale-in">
+            <div class="team-card-flag">🇺🇸</div>
+            <h3>Ayushmaan Bellum</h3>
+            <div class="role">Founder • Engineering & AI Lead</div>
+            <p>Leads sensor hardware, ESP32 firmware, BLE communication, mobile app development, and predictive
+              analytics.</p>
+            <p style="font-size:0.85rem;color:#444;">
+              Primary inventor responsible for system architecture, prototyping, and integration.
+            </p>
+          </div>
+          <div class="team-card scale-in">
+            <div class="team-card-flag">🇮🇳</div>
+            <h3>Saanvi Bellum</h3>
+            <div class="role">Director • Research & UX Lead</div>
+            <p>Leads clinical research, user experience design, and international testing across U.S. and India.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section">
+        <h2 class="fade-in-up">Contact</h2>
+        <p class="sub fade-in-up">For pilot opportunities or collaboration inquiries.</p>
+
+        <p class="fade-in-up"><strong>Email:</strong> <a href="mailto:info@dermalytix.health">info@dermalytix.health</a>
+        </p>
+        <p class="fade-in-up"><strong>Video:</strong> <a href="https://www.youtube.com/watch?v=ACTUAL_VIDEO_ID"
+            target="_blank">View Innovation
+            Video</a></p>
+      </section>
+
+    </main>
+
+    <footer class="fade-in">
+      © 2025 Dermalytix — Conrad Challenge Submission<br>
+      <span style="font-size: 0.9em; margin-top: 8px; display: inline-block;">Patent pending for core system
+        architecture.</span>
+    </footer>
+
+    <script>
+      // Scroll-triggered animations using Intersection Observer
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // Optional: Unobserve after animation to improve performance
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      // Observe all elements with animation classes
+      document.addEventListener('DOMContentLoaded', () => {
+        const animatedElements = document.querySelectorAll('.fade-in-up, .fade-in, .scale-in');
+        animatedElements.forEach(el => {
+          observer.observe(el);
+        });
+
+        // Trigger hero card animation on load
+        const heroCard = document.querySelector('.hero .card');
+        if (heroCard) {
+          setTimeout(() => {
+            heroCard.classList.add('visible');
+          }, 500);
+        }
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+
+            // Close mobile menu if open
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const navOverlay = document.querySelector('.nav-overlay');
+            if (navLinks && navLinks.classList.contains('active')) {
+              menuToggle.classList.remove('active');
+              navLinks.classList.remove('active');
+              navOverlay.classList.remove('active');
+              document.body.style.overflow = '';
+            }
+          }
+        });
+      });
+
+      // Mobile menu toggle
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      const navOverlay = document.querySelector('.nav-overlay');
+
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+          const isActive = navLinks.classList.contains('active');
+
+          menuToggle.classList.toggle('active');
+          navLinks.classList.toggle('active');
+          navOverlay.classList.toggle('active');
+
+          // Prevent body scroll when menu is open
+          if (!isActive) {
+            document.body.style.overflow = 'hidden';
+          } else {
+            document.body.style.overflow = '';
+          }
+        });
+
+        // Close menu when clicking overlay
+        if (navOverlay) {
+          navOverlay.addEventListener('click', () => {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+          });
+        }
+
+        // Close menu on window resize if it's larger than mobile
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 768) {
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+          }
+        });
+      }
+
+      // Flipbook functionality
+      document.addEventListener('DOMContentLoaded', () => {
+        const flipbook = document.querySelector('.flipbook');
+        const pages = document.querySelectorAll('.flipbook-page');
+        const prevBtn = document.querySelector('.flipbook-prev');
+        const nextBtn = document.querySelector('.flipbook-next');
+        const currentPageSpan = document.querySelector('.current-page');
+        const totalPagesSpan = document.querySelector('.total-pages');
+
+        if (!flipbook || !pages.length) return;
+
+        let currentPage = 0;
+        const totalPages = pages.length;
+
+        if (totalPagesSpan) {
+          totalPagesSpan.textContent = totalPages;
+        }
+
+        function showPage(index, direction = 'next') {
+          // Remove all animation classes first
+          pages.forEach(page => {
+            page.classList.remove('active', 'flipping-next', 'flipping-prev');
+          });
+
+          // Get current active page
+          const currentActivePage = pages[currentPage];
+          const nextPage = pages[index];
+
+          if (currentActivePage && nextPage && currentActivePage !== nextPage) {
+            // Add flipping animation to current page
+            if (direction === 'next') {
+              currentActivePage.classList.add('flipping-next');
+            } else {
+              currentActivePage.classList.add('flipping-prev');
+            }
+
+            // After a short delay, show the next page
+            setTimeout(() => {
+              // Remove animation from previous page
+              currentActivePage.classList.remove('flipping-next', 'flipping-prev', 'active');
+
+              // Show new page
+              nextPage.classList.add('active');
+
+              // Trigger reflow for smooth animation
+              nextPage.offsetHeight;
+            }, 50);
+          } else {
+            // Initial load or same page
+            pages.forEach((page, i) => {
+              if (i === index) {
+                page.classList.add('active');
+              } else {
+                page.classList.remove('active', 'flipping-next', 'flipping-prev');
+              }
+            });
+          }
+
+          if (currentPageSpan) {
+            currentPageSpan.textContent = index + 1;
+          }
+
+          // Update button states
+          if (prevBtn) {
+            prevBtn.disabled = index === 0;
+          }
+          if (nextBtn) {
+            nextBtn.disabled = index === totalPages - 1;
+          }
+        }
+
+        function nextPage() {
+          if (currentPage < totalPages - 1) {
+            const oldPage = currentPage;
+            currentPage++;
+            showPage(currentPage, 'next');
+          }
+        }
+
+        function prevPage() {
+          if (currentPage > 0) {
+            const oldPage = currentPage;
+            currentPage--;
+            showPage(currentPage, 'prev');
+          }
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', nextPage);
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', prevPage);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+          const flipbookContainer = document.querySelector('.flipbook-container');
+          if (!flipbookContainer) return;
+
+          // Check if flipbook is in viewport
+          const rect = flipbookContainer.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+          if (isVisible) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              nextPage();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+              e.preventDefault();
+              prevPage();
+            }
+          }
+        });
+
+        // Initialize
+        showPage(0);
+      });
+    </script>
+
+  </body>
+
+</html>
